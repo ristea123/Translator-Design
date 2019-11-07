@@ -1,0 +1,6 @@
+int a;
+int a(int x, int a[5])
+{
+    int a;
+    int b;
+    cin
