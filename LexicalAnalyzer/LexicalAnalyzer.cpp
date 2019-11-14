@@ -11,6 +11,7 @@ using namespace std;
 vector<string> types = { "int", "bool", "void" };
 vector<string> reservedWords = { "CIN" };
 vector<string> identifiers = {};
+vector<string> operators = {"+", "-", "*", "/", "!", "ANDAND", "OROR", "EQEQ", "NOTEQ", "<", ">", "LESSEQ", "GREATEREQ", "-"};
 bool shouldExist = false;
 
 void readWhiteSpaces(string code, int &position)
@@ -290,6 +291,55 @@ bool parseCIN(string code, int &position)
     }
 }
 
+bool checkEspression(string expr)
+{
+    int a = 2;
+    cout << expr << "\n";
+    return true;
+}
+
+bool parseCOUT(string code, int &position)
+{
+    string currToken;
+    readSpacesAndComments(code, position);
+    currToken = readWord(code, position);
+    if (currToken != "WRITE")
+    {
+        cout << "Expected WRITE token after COUT";
+        return false;
+    }
+    else
+    {
+        cout <<"Token : " << currToken << " - Reserved word\n";
+        string expr = "";
+        bool isStringLiteral = false;
+        readSpacesAndComments(code, position);
+        while (position <= code.length())
+        {
+            expr.push_back(code[position]);
+            if (code[position] == '"' && !isStringLiteral)
+            {
+                isStringLiteral = true;
+            }
+            if (code[position] == '"' && isStringLiteral)
+            {
+                isStringLiteral = false;
+            }
+            if (code[position] == ';' )
+                break;
+            position++;
+        }
+        expr.pop_back();
+        checkEspression(expr);
+    }
+
+    if (code[position] != ';' || position >= code.length() - 1)
+    {
+        cout << "Expected ; after identifier";
+        return false;
+    }
+}
+
 bool readFunctionCode(string code, int &position)
 {
     position++;
@@ -323,10 +373,16 @@ bool readFunctionCode(string code, int &position)
                 }
                 position++;
                 readSpacesAndComments(code, position);
+                if (currToken == "COUT")
+                {
+                    cout << "Token : " << currToken << " - Reserved word\n";
+                    if (parseCOUT(code, position) == false)
+                        return false;
+                }
                 if (code[position] == '}')
                 {
                     cout << "Token : } - symbol";
-                    break;
+                    return true;
                 }
             }
         }
