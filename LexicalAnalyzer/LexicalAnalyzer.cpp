@@ -10,6 +10,8 @@ using namespace std;
 
 vector<string> types = { "int", "bool", "void" };
 vector<string> reservedWords = { "CIN" };
+vector<string> identifiers = {};
+bool shouldExist = false;
 
 void readWhiteSpaces(string code, int &position)
 {
@@ -58,7 +60,7 @@ void readSpacesAndComments(string code, int &position)
             break;
         position++;
     }
-} 
+}
 
 bool readType(string code, int &position)
 {
@@ -113,6 +115,16 @@ bool verifyIdentifier(string param)
         cout << "Identifier cannot be a reserved word\n";
         return false;
     }
+    if (shouldExist)
+    {
+        if (find(identifiers.begin(), identifiers.end(), param) == identifiers.end())
+        {
+            cout << "Identifier : " << param << " was not declared";
+            return false;
+        }
+    }
+    shouldExist = false;
+    identifiers.push_back(param);
     return true;
 }
 
@@ -273,9 +285,26 @@ bool readFunctionCode(string code, int &position)
             }
             else
             {
-                if (currToken == "cin")
+                if (currToken == "CIN")
                 {
-                    cout << "Token : " << currToken << " - Reserved word";
+                    cout << "Token : " << currToken << " - Reserved word\n";
+                    readSpacesAndComments(code, position);
+                    currToken = readWord(code, position);
+                    if (currToken != "READ")
+                    {
+                        cout << "Expected READ token after CIN";
+                        return false;
+                    }
+                    else
+                    {
+                        cout << "Token : " << currToken << " - Reserved word\n";
+                        shouldExist = true;
+                        readIdentifier(code, position);
+                    }
+
+                    if (code[position] != ';' || position >= code.length() - 1)
+                        cout << "Expected ; after identifier";
+
                     break;
                 }
             }
