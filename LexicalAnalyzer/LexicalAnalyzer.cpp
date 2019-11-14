@@ -9,7 +9,7 @@
 using namespace std;
 
 vector<string> types = { "int", "bool", "void" };
-vector<string> reservedWords = { "CIN" };
+vector<string> reservedWords = { "CIN", "COUT" };
 vector<string> identifiers = {};
 vector<string> operators = {"+", "-", "*", "/", "!", "ANDAND", "OROR", "EQEQ", "NOTEQ", "<", ">", "LESSEQ", "GREATEREQ", "-"};
 bool shouldExist = false;
@@ -293,8 +293,30 @@ bool parseCIN(string code, int &position)
 
 bool checkEspression(string expr)
 {
-    int a = 2;
-    cout << expr << "\n";
+    bool isAtom = true;
+    for (auto it : operators)
+    {
+        auto found = expr.find(it);
+        if (found != string::npos)
+        {
+            isAtom = false;
+            if (found == 0)
+            {
+                if (it != "-"  && it != "!")
+                    cout << "expected expression before " << it << "\n";
+            }
+            else
+            {
+                string atom = expr.substr(0, found);
+                cout << "Token : " << atom << " - Atom\n";
+                cout << "Token : " << it << " - Operator\n";
+                expr = expr.substr(found + it.length(), expr.length());
+                return checkEspression(expr);
+            }
+        }
+    }
+    if (isAtom)
+        cout << "Token : " << expr << " - Atom\n";
     return true;
 }
 

@@ -5,5 +5,6 @@ int a(int x, int a[5])
     int b;
     CIN READ a[100];
     CIN READ b;
-    COUT WRITE c;
+    COUT WRITE aaaANDANDbbb + c + d;
+    COUT WRITE a+b;
 }
