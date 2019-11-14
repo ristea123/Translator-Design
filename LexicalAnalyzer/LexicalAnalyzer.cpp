@@ -302,6 +302,12 @@ bool readFunctionCode(string code, int &position)
                         readIdentifier(code, position);
                     }
 
+                    if (code[position] == '[')
+                    {
+                        if (readArrSize(code, position) == false)
+                            return false;
+                    }
+
                     if (code[position] != ';' || position >= code.length() - 1)
                         cout << "Expected ; after identifier";
 
