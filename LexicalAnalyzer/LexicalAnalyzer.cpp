@@ -260,6 +260,36 @@ bool readParameteres(string code, int &position)
     }
 }
 
+bool parseCIN(string code, int &position)
+{
+    string currToken;
+    readSpacesAndComments(code, position);
+    currToken = readWord(code, position);
+    if (currToken != "READ")
+    {
+        cout << "Expected READ token after CIN";
+        return false;
+    }
+    else
+    {
+        cout << "Token : " << currToken << " - Reserved word\n";
+        shouldExist = true;
+        readIdentifier(code, position);
+    }
+
+    if (code[position] == '[')
+    {
+        if (readArrSize(code, position) == false)
+            return false;
+    }
+
+    if (code[position] != ';' || position >= code.length() - 1)
+    {
+        cout << "Expected ; after identifier";
+        return false;
+    }
+}
+
 bool readFunctionCode(string code, int &position)
 {
     position++;
@@ -288,29 +318,14 @@ bool readFunctionCode(string code, int &position)
                 if (currToken == "CIN")
                 {
                     cout << "Token : " << currToken << " - Reserved word\n";
-                    readSpacesAndComments(code, position);
-                    currToken = readWord(code, position);
-                    if (currToken != "READ")
-                    {
-                        cout << "Expected READ token after CIN";
+                    if (parseCIN(code, position) == false)
                         return false;
-                    }
-                    else
-                    {
-                        cout << "Token : " << currToken << " - Reserved word\n";
-                        shouldExist = true;
-                        readIdentifier(code, position);
-                    }
-
-                    if (code[position] == '[')
-                    {
-                        if (readArrSize(code, position) == false)
-                            return false;
-                    }
-
-                    if (code[position] != ';' || position >= code.length() - 1)
-                        cout << "Expected ; after identifier";
-
+                }
+                position++;
+                readSpacesAndComments(code, position);
+                if (code[position] == '}')
+                {
+                    cout << "Token : } - symbol";
                     break;
                 }
             }
