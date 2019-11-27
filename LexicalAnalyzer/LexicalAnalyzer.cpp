@@ -1,20 +1,14 @@
 // LexicalAnalyzer.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
 #include "pch.h"
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <vector>
-using namespace std;
+#include "Parser.h"
+#include "AST.h"
+
 
 vector<string> types = { "int", "bool", "void" };
 vector<string> reservedWords = { "CIN", "COUT" };
 vector<string> identifiers = {};
 vector<string> operators = {"+", "-", "*", "/", "!", "ANDAND", "OROR", "EQEQ", "NOTEQ", "<", ">", "LESSEQ", "GREATEREQ", "-"};
-
-string code;
-int position;
 
 int main()
 {
@@ -26,6 +20,9 @@ int main()
         a[size] = f.get();
         size++;
     }
-    code = a;
+    string code = a;
     code.resize(size);
+    Parser parser;
+    parser.parse(code, 0);
+    
 }
