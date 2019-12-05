@@ -17,4 +17,5 @@ public:
     bool parseIf(string code, int &position);
     bool parseWhile(string code, int &position);
     bool parseExpression( ASTNode *&currNode, string expression);
+    bool parseReturn(string code, int &position);
 };

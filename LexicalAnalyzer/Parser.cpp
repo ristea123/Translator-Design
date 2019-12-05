@@ -225,6 +225,24 @@ bool Parser::parseIf(string code, int & position)
     return true;
 }
 
+bool Parser::parseReturn(string code, int &position)
+{
+    position++;
+    readWhiteSpaces(code, position);
+    string retStmt = "";
+    while (code[position] != ';')
+    {
+        retStmt += code[position];
+        position++;
+    }
+    currNode->addChild("expression");
+    currNode = currNode->children[currNode->nrChildren - 1];
+    parseExpression(currNode, retStmt);
+    position++;
+    readWhiteSpaces(code, position);
+    return true;
+}
+
 bool Parser::parseWhile(string code, int & position)
 {
     position++;
@@ -258,21 +276,6 @@ bool Parser::parseBlock(string code, int &position)
     {
         expr += code[position];
         position++;
-        if (code[position] == ' ' && find(otherReservedWords.begin(), otherReservedWords.end(), expr) == otherReservedWords.end())
-        {
-            while (code[position] != ';' && code[position] != '}' && position < code.length() - 1)
-            {
-                expr += code[position];
-                position++;
-            }
-            parseExpression(currNode, expr);
-            if (code[position] == '}')
-            {
-                position++;
-                readWhiteSpaces(code, position);
-            }
-            expr = "";
-        }
         if (expr == "IF")
         {
             currNode->addChild("IF");
@@ -325,6 +328,28 @@ bool Parser::parseBlock(string code, int &position)
             expr = "";
             currNode = currNode->parent;
             readWhiteSpaces(code, position);
+        }
+        if (expr == "RETURN")
+        {
+            currNode->addChild("RETURN");
+            currNode = currNode->children[currNode->nrChildren - 1];
+            parseReturn(code, position);
+            expr = "";
+        }
+        if (code[position] == ' ' && find(otherReservedWords.begin(), otherReservedWords.end(), expr) == otherReservedWords.end())
+        {
+            while (code[position] != ';' && code[position] != '}' && position < code.length() - 1)
+            {
+                expr += code[position];
+                position++;
+            }
+            parseExpression(currNode, expr);
+            if (code[position] == '}')
+            {
+                position++;
+                readWhiteSpaces(code, position);
+            }
+            expr = "";
         }
     }
     return true;

@@ -13,4 +13,5 @@ int x(int a, int b)
     {
         xyz = 123;
     }
+    RETURN 0;
 }
