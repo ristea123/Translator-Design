@@ -1,5 +1,6 @@
 #include "Utilities.h"
 #include "AST.h"
+
 class Parser
 {
     vector<string> identifiers;
@@ -14,4 +15,5 @@ public:
     bool parseFunctionParameters(string code, int &position);
     bool parseBlock(string code, int &position);
     bool parseIf(string code, int &position);
+    bool parseExpression( ASTNode *&currNode, string expression);
 };

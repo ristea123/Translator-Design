@@ -156,6 +156,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AST.cpp" />
     <ClCompile Include="LexicalAnalyzer.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="pch.cpp">

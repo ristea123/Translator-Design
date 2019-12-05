@@ -6,9 +6,9 @@
 using namespace std;
 
 static vector<string> types = { "int", "bool", "void" };
-static vector<string> OtherReservedWords = { "CIN", "COUT", "program" };
+static vector<string> otherReservedWords = { "CIN", "COUT", "program", "IF" };
 static vector<string> operators = { "+", "-", "*", "/", "!", "ANDAND", "OROR", "EQEQ", "NOTEQ", "<", ">", "LESSEQ", "GREATEREQ", "-" };
-static vector<vector<string>> reservedWords = { types, operators, OtherReservedWords };
+static vector<vector<string>> reservedWords = { types, operators, otherReservedWords };
 
 inline bool verifyIdentifier(string identifier)
 {

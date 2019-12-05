@@ -1,7 +1,8 @@
 #ifndef AST_H
 #define AST_H
 #include "string"
-
+#include "queue"
+using namespace std;
 class ASTNode
 {
 public:
@@ -22,4 +23,5 @@ public:
     }
     ASTNode() {};
 };
+void printTree(ASTNode *root);
 #endif

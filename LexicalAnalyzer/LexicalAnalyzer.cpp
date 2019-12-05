@@ -18,5 +18,4 @@ int main()
     code.resize(size);
     Parser parser;
     parser.parse(code, 0);
-    
 }

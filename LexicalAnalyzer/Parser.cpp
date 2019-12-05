@@ -147,6 +147,53 @@ bool Parser::parseFunctionParameters(string code, int &position)
     }
     return true;
 }
+bool Parser::parseExpression(ASTNode *&currNode, string expression)
+{
+    vector<string> words;
+    size_t current, previous = 0;
+    current = expression.find(" ");
+    string expr1 = "";
+    string expr2 = "";
+    string word;
+    bool is1Expression = true;
+
+    while (current != string::npos)
+    {
+        word = expression.substr(previous, current - previous);
+        if (find(operators.begin(), operators.end(), word) != operators.end())
+        {
+            for (auto it : words)
+                expr1 += it;
+            previous = current + 1;
+            while (expression[previous] == ' ')
+                previous++;
+            expr2 = expression.substr(previous, expression.length() - previous + 1);
+            is1Expression = false;
+            break;
+        }
+        else
+        {
+            words.push_back(word);
+            previous = current + 1;
+            current = expression.find(" ", previous);
+        }
+    }
+    if(is1Expression == true)
+        expr1 += expression.substr(previous, current - previous);
+
+    currNode->addChild(expr1);
+    currNode->children[currNode->nrChildren - 1]->addChild("atom");
+    if (expr2 != "")
+    {
+        currNode->addChild(word);
+        currNode->addChild(expr2);
+        currNode = currNode->children[currNode->nrChildren - 1];
+        currNode->addChild("atom");
+        parseExpression(currNode, expr2);
+    }
+    currNode = currNode->parent;
+    return true;
+}
 
 bool Parser :: parseIf(string code, int & position)
 {
@@ -158,60 +205,45 @@ bool Parser :: parseIf(string code, int & position)
         ifStmt += code[position];
         position++;
     }
-    vector<string> words;
-    size_t current, previous = 0;
-    current = ifStmt.find(" ");
-    string expr1 = "";
-    string expr2 = "";
-    while (current != string::npos)
-    {
-        words.push_back(ifStmt.substr(previous, current - previous));
-        previous = current + 1;
-        current = ifStmt.find(" ", previous);
-    }
-    words.push_back(ifStmt.substr(previous, current - previous));
-    string foundOper = "";
-    for (auto oper : operators)
-    {
-        auto pos = find(words.begin(), words.end(), oper);
-        if (pos != words.end())
-        {
-            for(auto it = words.begin(); it < pos; it++)
-            {
-                expr1 += *it;
-            }
-            for(auto it = pos + 1; it != words.end(); it++)
-            {
-                expr2 += *it;
-            }
-            foundOper = *pos;
-            break;
-        }
-    }
-    currNode->addChild(expr1);
-    if (expr2 != "")
-    {
-        currNode->addChild(foundOper);
-        currNode->addChild(expr2);
-    }
+    currNode->addChild("statement");
+    currNode = currNode->children[currNode->nrChildren - 1];
+    parseExpression(currNode, ifStmt);
+    printTree(root);
+    position++;
+    readWhiteSpaces(code, position);
+    if (code[position] != '{')
+        cout << "Expected { after if statement";
+    else
+        parseBlock(code, position);
     return true;
 }
 
 bool Parser::parseBlock(string code, int &position)
 {
+    currNode->addChild("block");
+    currNode = currNode->children[0];
     position++;
     readWhiteSpaces(code, position);
-    string word = "";
-    while (true)
+    string expr = "";
+    while (position < code.length() - 1)
     {
-        word += code[position];
+        expr += code[position];
         position++;
-        if (word == "IF")
+        if (code[position] == ' ' && find(otherReservedWords.begin(), otherReservedWords.end(), expr) == otherReservedWords.end())
+        {
+            while (code[position] != ';')
+            {
+                expr += code[position];
+                position++;
+            }
+            parseExpression(currNode, expr);
+            printTree(root);
+        }
+        if (expr == "IF")
         {
             currNode->addChild("IF");
             currNode = currNode->children[currNode->nrChildren - 1];
             parseIf(code, position);
-            break;
         }
     }
     return true;
@@ -224,8 +256,7 @@ bool Parser::parseProgram(string code, int position)
     {
         cout << "Token - " << "program - " << " keyword\n";
         root = new ASTNode("program", NULL);
-        root->addChild("block");
-        currNode = root->children[0];
+        currNode = root;
         readWhiteSpaces(code, position);
         while (parseVarDecl(code, position) == true)
         {
