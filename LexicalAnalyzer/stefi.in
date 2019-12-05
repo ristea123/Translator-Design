@@ -4,6 +4,7 @@ int xyz;
 int x(int a, int b)
 {
     CIN READ asd
+    COUT WRITE "ABCD"
     IF(asd EQEQ "abc")
     {
         xyz = 123;

@@ -298,9 +298,32 @@ bool Parser::parseBlock(string code, int &position)
             word = readUntilSpaceOrNewLine(code, position);
             if (find(identifiers.begin(), identifiers.end(), word) == identifiers.end())
                 cout << "identifier " << word <<" not found\n";
+            currNode = currNode->children[currNode->nrChildren - 1];
             currNode->addChild(word);
             (currNode->children[currNode->nrChildren - 1])->addChild("identifier");
             expr = "";
+            currNode = currNode->parent;
+            readWhiteSpaces(code, position);
+        }
+        if (expr == "COUT")
+        {
+            currNode->addChild("COUT");
+            readWhiteSpaces(code, position);
+            string word = readUntilSpaceOrNewLine(code, position);
+            if (word != "WRITE")
+                cout << "expected WRITE after COUT\n";
+            readWhiteSpaces(code, position);
+            word = readUntilSpaceOrNewLine(code, position);
+            currNode = currNode->children[currNode->nrChildren - 1];
+            currNode->addChild(word);
+            if (word[0] == '\"')
+                currNode->children[currNode->nrChildren - 1]->addChild("String Literal");
+            if (word[0] >= '0' && word[0] <= '9')
+                currNode->children[currNode->nrChildren - 1]->addChild("Integer Literal");
+            if (find(identifiers.begin(), identifiers.end(), word) != identifiers.end())
+                currNode->children[currNode->nrChildren - 1]->addChild("identifier");
+            expr = "";
+            currNode = currNode->parent;
             readWhiteSpaces(code, position);
         }
     }
