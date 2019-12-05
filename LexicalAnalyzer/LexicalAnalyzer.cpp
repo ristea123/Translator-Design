@@ -6,7 +6,7 @@
 
 int main()
 {
-    char * a = new char[100];
+    char * a = new char[500];
     ifstream f("stefi.in");
     int size = 0;
     while (!f.eof())

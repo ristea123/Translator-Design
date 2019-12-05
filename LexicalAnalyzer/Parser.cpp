@@ -2,6 +2,7 @@
 #include "Parser.h"
 
 static bool isError = true;
+bool isInIf = false;
 
 bool Parser::parseArrayField(string code, int &position)
 {
@@ -55,6 +56,7 @@ bool Parser::parseIdentifier(string code, int &position)
     }
     if (verifyIdentifier(identifier) == false)
         return false;
+    identifiers.push_back(identifier);
     cout << "Token - " << identifier << " - identifier\n";
     readWhiteSpaces(code, position);
     return true;
@@ -178,11 +180,17 @@ bool Parser::parseExpression(ASTNode *&currNode, string expression)
             current = expression.find(" ", previous);
         }
     }
-    if(is1Expression == true)
+    if (is1Expression == true)
         expr1 += expression.substr(previous, current - previous);
 
     currNode->addChild(expr1);
     currNode->children[currNode->nrChildren - 1]->addChild("atom");
+    if(expr1[0] == '"')
+        currNode->children[currNode->nrChildren - 1]->children[0]->addChild("String Literal");
+    if (expr1[0] >= '0' && expr1[0] <= '9')
+        currNode->children[currNode->nrChildren - 1]->children[0]->addChild("Integer Literal");
+    if(find(identifiers.begin(), identifiers.end(), expr1) != identifiers.end())
+        currNode->children[currNode->nrChildren - 1]->children[0]->addChild("identifier");
     if (expr2 != "")
     {
         currNode->addChild(word);
@@ -195,7 +203,7 @@ bool Parser::parseExpression(ASTNode *&currNode, string expression)
     return true;
 }
 
-bool Parser :: parseIf(string code, int & position)
+bool Parser::parseIf(string code, int & position)
 {
     position++;
     readWhiteSpaces(code, position);
@@ -208,7 +216,28 @@ bool Parser :: parseIf(string code, int & position)
     currNode->addChild("statement");
     currNode = currNode->children[currNode->nrChildren - 1];
     parseExpression(currNode, ifStmt);
-    printTree(root);
+    position++;
+    readWhiteSpaces(code, position);
+    if (code[position] != '{')
+        cout << "Expected { after if statement";
+    else
+        parseBlock(code, position);
+    return true;
+}
+
+bool Parser::parseWhile(string code, int & position)
+{
+    position++;
+    readWhiteSpaces(code, position);
+    string ifStmt = "";
+    while (code[position] != ')')
+    {
+        ifStmt += code[position];
+        position++;
+    }
+    currNode->addChild("statement");
+    currNode = currNode->children[currNode->nrChildren - 1];
+    parseExpression(currNode, ifStmt);
     position++;
     readWhiteSpaces(code, position);
     if (code[position] != '{')
@@ -225,25 +254,54 @@ bool Parser::parseBlock(string code, int &position)
     position++;
     readWhiteSpaces(code, position);
     string expr = "";
-    while (position < code.length() - 1)
+    while (position < code.length() - 2)
     {
         expr += code[position];
         position++;
         if (code[position] == ' ' && find(otherReservedWords.begin(), otherReservedWords.end(), expr) == otherReservedWords.end())
         {
-            while (code[position] != ';')
+            while (code[position] != ';' && code[position] != '}' && position < code.length() - 1)
             {
                 expr += code[position];
                 position++;
             }
             parseExpression(currNode, expr);
-            printTree(root);
+            if (code[position] == '}')
+            {
+                position++;
+                readWhiteSpaces(code, position);
+            }
+            expr = "";
         }
         if (expr == "IF")
         {
             currNode->addChild("IF");
             currNode = currNode->children[currNode->nrChildren - 1];
             parseIf(code, position);
+            expr = "";
+        }
+        if (expr == "WHILE")
+        {
+            currNode->addChild("WHILE");
+            currNode = currNode->children[currNode->nrChildren - 1];
+            parseWhile(code, position);
+            expr = "";
+        }
+        if (expr == "CIN")
+        {
+            currNode->addChild("CIN");
+            readWhiteSpaces(code, position);
+            string word = readUntilSpaceOrNewLine(code, position);
+            if (word != "READ")
+                cout << "expected READ after CIN\n";
+            readWhiteSpaces(code, position);
+            word = readUntilSpaceOrNewLine(code, position);
+            if (find(identifiers.begin(), identifiers.end(), word) == identifiers.end())
+                cout << "identifier " << word <<" not found\n";
+            currNode->addChild(word);
+            (currNode->children[currNode->nrChildren - 1])->addChild("identifier");
+            expr = "";
+            readWhiteSpaces(code, position);
         }
     }
     return true;
@@ -281,6 +339,7 @@ bool Parser::parseProgram(string code, int position)
     }
     else
         return false;
+    printTree(root);
 }
 
 bool Parser::parse(string code, int position)

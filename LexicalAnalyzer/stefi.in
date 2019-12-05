@@ -1,9 +1,15 @@
 program
 int asd[123];
+int xyz;
 int x(int a, int b)
 {
-    IF(abcd ANDAND addef ANDAND defg)
+    CIN READ asd
+    IF(asd EQEQ "abc")
     {
-        xyz ANDAND ddd ANDAND qwe;
+        xyz = 123;
+    }
+    WHILE(asd EQEQ "abc")
+    {
+        xyz = 123;
     }
 }
