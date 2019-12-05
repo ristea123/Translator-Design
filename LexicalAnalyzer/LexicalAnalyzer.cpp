@@ -4,12 +4,6 @@
 #include "Parser.h"
 #include "AST.h"
 
-
-vector<string> types = { "int", "bool", "void" };
-vector<string> reservedWords = { "CIN", "COUT" };
-vector<string> identifiers = {};
-vector<string> operators = {"+", "-", "*", "/", "!", "ANDAND", "OROR", "EQEQ", "NOTEQ", "<", ">", "LESSEQ", "GREATEREQ", "-"};
-
 int main()
 {
     char * a = new char[100];
