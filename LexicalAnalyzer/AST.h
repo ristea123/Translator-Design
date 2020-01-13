@@ -1,27 +1,18 @@
-#ifndef AST_H
-#define AST_H
-#include "string"
-#include "queue"
-using namespace std;
-class ASTNode
+#pragma once
+#ifndef __AST_H__
+#define __AST_H__
+
+#include "ASTNode.h"
+#include "vector"
+class AST
 {
+private:
+    ASTNode * root;
+    ASTNode * currNode;
 public:
-    string value;
-    ASTNode** children;
-    ASTNode* parent;
-    int nrChildren = 0;
-    void addChild(string value)
-    {
-        children[nrChildren] = new ASTNode(value, this);
-        nrChildren++;
-    }
-    ASTNode(string value, ASTNode* parent)
-    {
-        this->value = value;
-        this->parent = parent;
-        children = new ASTNode*[100];
-    }
-    ASTNode() {};
+    AST();
+    void buildTree(vector<TokenClass> tokens);
+    void printTree();
 };
-void printTree(ASTNode *root);
-#endif
+
+#endif // !__AST_H__

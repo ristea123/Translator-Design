@@ -1,4 +1,7 @@
+#pragma once
 #include "pch.h"
+
+#include "Token.h"
 #include "string"
 #include <iostream>
 #include <fstream>
@@ -6,49 +9,23 @@
 using namespace std;
 
 static vector<string> types = { "int", "bool", "void" };
-static vector<string> otherReservedWords = { "CIN", "COUT", "program", "IF" };
-static vector<string> operators = { "+", "=", "-", "*", "/", "!", "ANDAND", "OROR", "EQEQ", "NOTEQ", "<", ">", "LESSEQ", "GREATEREQ", "-" };
-static vector<vector<string>> reservedWords = { types, operators, otherReservedWords };
+static vector<string> separator = { ",", ";", "{", "(", ")", "}" };
+static vector<string> commands = { "CIN", "COUT", "program", "IF", "RETURN", "WHILE" };
+static vector<string> operators = { "+", "=", "-", "*", "/", "!", "-" };
+static vector<string> comparators = { "ANDAND", "OROR", "EQEQ", "NOTEQ", "<", ">", "LESSEQ", "GREATEREQ" };
+static vector<vector<string>> reservedWords = { types, commands, operators, comparators, separator };
+static vector<string> tokenTypes = { "type", "command", "operator", "comparator","separator",  "identifier" };
 
-inline bool verifyIdentifier(string identifier)
+class symbolTableRow
 {
-    if (isalpha(identifier[0]) == false && identifier[0] != '_')
-    {
-        cout << "Identifier must start with letter or _\n";
-        return false;
-    }
-    for (auto vecIt : reservedWords)
-        for (auto it : vecIt)
-            if (it == identifier)
-            {
-                cout << "Identifier can not be a reserved word \n";
-                return false;
-            }
-    for (auto it : identifier)
-    {
-        if (isalnum(it) == 0 && it != '_')
-        {
-            cout << "All characters in identifier must be alphanumerical or _";
-            return false;
-        }
-    }
-}
+public:
+    string name, type, scope;
+    symbolTableRow(string name, string type, string scope) : name(name), type(type), scope(scope) {}
+};
 
-inline void readWhiteSpaces(string code, int &position)
-{
-    while (code[position] == ' ' || code[position] == '\n' && position < code.length() - 1)
-    {
-        position++;
-    }
-}
+static vector<symbolTableRow*> rows;
 
-inline string readUntilSpaceOrNewLine(string code, int &position)
-{
-    string currStr = "";
-    while (code[position] != ' ' && code[position] != '\n' && position < code.length() - 1)
-    {
-        currStr += code[position];
-        position++;
-    }
-    return currStr;
-}
+string determineTokenType(string TokenClass);
+void buildSymbolTable(vector<TokenClass> tokens);
+
+void refactorTokens(vector<TokenClass> &tokens);

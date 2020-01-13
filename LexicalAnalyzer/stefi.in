@@ -1,17 +1,26 @@
 program
-int asd[123];
-int xyz;
-int x(int a, int b)
+int asd[123] ;
+int xyz ;
+int dfg ;
+bool func ( int param1 , int param2 )
 {
-    CIN READ asd
-    COUT WRITE "ABCD"
-    IF(asd EQEQ "abc")
+    dfg = 123;
+    xyz =234;
+}
+int x ( int a , int b )
+{
+    int y ;
+    int z ;
+    CIN READ asd ;
+    COUT WRITE "ABCD" ;
+    IF ( asd + 2 EQEQ "abc" - 1 )
     {
-        xyz = 123;
+        xyz = 123 ;
     }
-    WHILE(asd EQEQ "abc")
+    WHILE ( xyz EQEQ 123 )
     {
-        xyz = 123;
+        dfg = 789 ;
     }
-    RETURN 0;
+    tre = 7;
+    RETURN 0 ;
 }
