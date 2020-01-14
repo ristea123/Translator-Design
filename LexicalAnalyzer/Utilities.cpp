@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Utilities.h"
+vector<symbolTableRow*> rows;
 string determineTokenType(string TokenClass)
 {
     int i = 0;
@@ -33,31 +34,3 @@ void refactorTokens(vector<TokenClass> &tokens)
         }
     }
 }
-
-//void buildSymbolTable(vector<TokenClass> tokens)
-//{
-//    for (auto it = tokens.begin(); it != tokens.end(); it++)
-//    {
-//        if ((*it).value == "{")
-//            accolades++;
-//        if ((*it).value == "}")
-//            accolades--;
-//        if ((*it).tokenType == "identifier")
-//        {
-//            string scope;
-//            if (accolades > 0)
-//                scope = "local";
-//            else
-//                scope = "global";
-//            if (parantheses > 0)
-//            {
-//                scope = "function parameter";
-//            }
-//            symbolTableRow *row = new symbolTableRow((*it).value, (*it).type, scope);
-//            rows.push_back(new symbolTableRow((*it).value, (*it).type, scope));
-//        }
-//        if ((*it).value == "function")
-//        {
-//        }
-//    }
-//}

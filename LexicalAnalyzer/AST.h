@@ -7,12 +7,14 @@
 class AST
 {
 private:
-    ASTNode * root;
     ASTNode * currNode;
 public:
+    ASTNode * root;
     AST();
     void buildTree(vector<TokenClass> tokens);
     void printTree();
+    void parseTree();
+    void checkStmtForTypeErr(ASTNode * node);
 };
 
 #endif // !__AST_H__

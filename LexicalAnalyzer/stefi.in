@@ -1,12 +1,7 @@
 program
-int asd[123] ;
-int xyz ;
+int asd ;
+bool xyz ;
 int dfg ;
-bool func ( int param1 , int param2 )
-{
-    dfg = 123;
-    xyz =234;
-}
 int x ( int a , int b )
 {
     int y ;

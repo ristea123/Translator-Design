@@ -29,7 +29,6 @@ int main()
     AST AST;
     AST.buildTree(prs.tokens);
     cout << "------Abstract syntax tree---------S" << "\n";
-    AST.printTree();
 
     cout << "\n\n\n\n";
     cout << "symbol name " << "Type " << "Scope" << "\n";
@@ -65,6 +64,9 @@ int main()
             }
         }
     }
+
+        AST.parseTree();
+
     for (auto it : rows)
     {
         cout << it->name << " " << it->type << " " << it->scope << "\n";

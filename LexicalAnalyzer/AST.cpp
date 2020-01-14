@@ -149,3 +149,55 @@ void AST::printTree()
         cout << endl;
     }
 }
+
+void AST::parseTree()
+{
+    if (root == NULL)
+        return;
+    queue<ASTNode *> q;
+    q.push(root);
+    while (!q.empty())
+    {
+        int n = q.size();
+        while (n > 0)
+        {
+            ASTNode * p = q.front();
+            q.pop();
+            if (p->value.tokenType == "comparator")
+            {
+                checkStmtForTypeErr(p->parent);
+            }
+            for (int i = 0; i < p->nrChildren; i++)
+                q.push(p->children[i]);
+            n--;
+        }
+        cout << endl;
+    }
+}
+
+void AST::checkStmtForTypeErr(ASTNode * node)
+{
+    vector<string> stmtTypes;
+
+    for (int i = 0; i < node->nrChildren; i++)
+    {
+        string currType = "";
+        if (node->children[i]->value.tokenType == "string literal")
+            currType = "string";
+        else
+            if (node->children[i]->value.tokenType == "integer literal")
+                currType = "int";
+            else
+            {
+                for (auto it : rows)
+                    if (node->children[i]->value.value == it->name)
+                        currType = it->type;
+            }
+        if (currType != "")
+        {
+            stmtTypes.push_back(currType);
+            if (stmtTypes.size() > 1 && stmtTypes[stmtTypes.size() - 1] != stmtTypes[stmtTypes.size() - 2])
+                cout << "types " << stmtTypes[stmtTypes.size() - 2] << " and " << stmtTypes[stmtTypes.size() - 1] << " cannot be compared and no operations between them can be made\n";
+        }
+    }
+}

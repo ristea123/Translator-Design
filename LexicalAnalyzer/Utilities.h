@@ -23,9 +23,8 @@ public:
     symbolTableRow(string name, string type, string scope) : name(name), type(type), scope(scope) {}
 };
 
-static vector<symbolTableRow*> rows;
+extern vector<symbolTableRow*> rows;
 
 string determineTokenType(string TokenClass);
 void buildSymbolTable(vector<TokenClass> tokens);
-
 void refactorTokens(vector<TokenClass> &tokens);
