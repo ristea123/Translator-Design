@@ -14,7 +14,8 @@ public:
     void buildTree(vector<TokenClass> tokens);
     void printTree();
     void parseTree();
-    void checkStmtForTypeErr(ASTNode * node);
+    void checkComparistonAndOppForTypeErr(ASTNode * node);
+    void checkAssignmentTypeError(ASTNode * node);
 };
 
 #endif // !__AST_H__

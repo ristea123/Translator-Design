@@ -2,6 +2,7 @@ program
 int asd ;
 bool xyz ;
 int dfg ;
+bool tre ;
 int x ( int a , int b )
 {
     int y ;

@@ -165,7 +165,11 @@ void AST::parseTree()
             q.pop();
             if (p->value.tokenType == "comparator")
             {
-                checkStmtForTypeErr(p->parent);
+                checkComparistonAndOppForTypeErr(p->parent);
+            }
+            if(p->value.value == "=")
+            {
+                checkAssignmentTypeError(p->parent);
             }
             for (int i = 0; i < p->nrChildren; i++)
                 q.push(p->children[i]);
@@ -175,7 +179,39 @@ void AST::parseTree()
     }
 }
 
-void AST::checkStmtForTypeErr(ASTNode * node)
+void AST::checkAssignmentTypeError(ASTNode * node)
+{
+    if (node->children[1]->value.value != "=")
+        cout << "Error: cannot be more than 1 token before assignment operator";
+    string identifierType;
+    for (auto it : rows)
+        if (node->children[0]->value.value == it->name)
+            identifierType = it->type;
+
+    for (int i = 2; i < node->nrChildren; i++)
+    {
+        string currType = "";
+        if (node->children[i]->value.tokenType == "string literal")
+            currType = "string";
+        else
+            if (node->children[i]->value.tokenType == "integer literal")
+                currType = "int";
+            else
+            {
+                for (auto it : rows)
+                    if (node->children[i]->value.value == it->name)
+                        currType = it->type;
+            }
+        if (currType != identifierType && currType != "")
+        {
+            cout << "Error Type : " << identifierType << node->children[0]->value.value << " identifier cannot be assigned " << currType << " type\n";
+            break;
+        }
+
+    }
+}
+
+void AST::checkComparistonAndOppForTypeErr(ASTNode * node)
 {
     vector<string> stmtTypes;
 
