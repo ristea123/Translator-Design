@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Utilities.h"
 vector<symbolTableRow*> rows;
+vector<string> errors;
 string determineTokenType(string TokenClass)
 {
     int i = 0;

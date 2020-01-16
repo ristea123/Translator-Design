@@ -8,13 +8,15 @@ class TokenClass
 public:
     string value, tokenType, type;
     int line;
-    TokenClass() {}
-    TokenClass(string value, string tokenType, string type = "") : value(value), tokenType(tokenType), type(type) {};
+    bool isInitialized;
+    TokenClass() { isInitialized = false; }
+    TokenClass(string value, string tokenType, string type = "") : value(value), tokenType(tokenType), type(type) { isInitialized = false; };
     TokenClass& operator=(const TokenClass& other)
     {
         value = other.value;
         tokenType = other.tokenType;
         line = other.line;
+        isInitialized = other.isInitialized;
         return *this;
     }
 };

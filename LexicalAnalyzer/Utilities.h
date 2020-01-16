@@ -23,7 +23,11 @@ public:
     symbolTableRow(string name, string type, string scope) : name(name), type(type), scope(scope) {}
 };
 
+
+void checkFunctionParameters();
+
 extern vector<symbolTableRow*> rows;
+extern vector<string> errors;
 
 string determineTokenType(string TokenClass);
 void buildSymbolTable(vector<TokenClass> tokens);

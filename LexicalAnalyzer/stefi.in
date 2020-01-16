@@ -7,6 +7,7 @@ int x ( int a , int b )
 {
     int y ;
     int z ;
+    q = 7
     int dfg ;
     CIN READ asd ;
     COUT WRITE "ABCD" ;

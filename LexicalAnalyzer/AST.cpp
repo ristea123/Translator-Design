@@ -23,6 +23,11 @@ ASTNode* buildIfNode(vector<TokenClass>::iterator it, ASTNode *currNode)
     for (auto it3 = it; it3 < it2; it3++)
     {
         currNode->addChild(*it3);
+        if ((*it3).tokenType == "identifier" && (*it3).isInitialized == false)
+        {
+            string error = "Error : variable " + (*it3).value + " used without being initialized\n";
+            errors.push_back(error);
+        }
     }
     currNode->addChild(*it2);
     it2++;
@@ -88,6 +93,11 @@ void buildStatementNode(vector<TokenClass>::iterator it, ASTNode *currNode)
     it2 += 1;
     while ((*it2).value != ";")
     {
+        if ((*it2).tokenType == "type")
+        {
+            string error = "Error : Expected ; before identifier " + (*it2).value + " on line " + to_string((*it2).line) + "\n";
+            errors.push_back(error);
+        }
         currNode->addChild(*it2);
         it2++;
     }
@@ -253,7 +263,8 @@ void AST::checkAssignmentTypeError(ASTNode * node)
 {
     if (node->children[1]->value.value != "=" && (node->children[2]->value.value != "=" && node->children[0]->value.tokenType == "type"))
     {
-        cout << "Error: cannot be more than 1 token before assignment operator on line" << node->children[1]->value.line << "\n";
+        string error = "Error: cannot be more than 1 token before assignment operator on line" + to_string(node->children[1]->value.line) + "\n";
+        errors.push_back(error);
         return;
     }
     bool found = false;
@@ -265,7 +276,8 @@ void AST::checkAssignmentTypeError(ASTNode * node)
         }
     if (found == false)
     {
-        cout << "identifier " << node->children[0]->value.value << " not found \n";
+        string error = "Error : identifier " + node->children[0]->value.value + " not found \n";
+        errors.push_back(error);
         return;
     }
     string identifierType;
@@ -296,18 +308,24 @@ void AST::checkAssignmentTypeError(ASTNode * node)
         {
             if (node->children[0]->value.tokenType != "type")
             {
-                cout << "Error Type : " << identifierType << node->children[0]->value.value;
-                cout << " identifier cannot be assigned " << currType << " " << " type on line " << node->children[0]->value.line << "\n";
+                string error = + "Error : Type  " + identifierType + node->children[0]->value.value + " identifier cannot be assigned " + currType + " " + " type on line " + to_string(node->children[0]->value.line) + "\n";
+                errors.push_back(error);
             }
             else
             {
-                cout << "Error Type : " << identifierType << node->children[0]->value.value << " identifier cannot be initialized with " << currType;
-                cout << " type on line " << node->children[0]->value.line << "\n";
+                string error = + "Error : Type " + identifierType + node->children[0]->value.value + " identifier cannot be initialized with " + currType + " type on line " + to_string(node->children[0]->value.line) + "\n";
+                errors.push_back(error);
             }
             break;
         }
 
     }
+    for (int i = 0; i < node->nrChildren; i++)
+        if (node->children[i]->value.tokenType == "identifier")
+        {
+            node->children[i]->value.isInitialized = true;
+            break;
+        }
 }
 
 void AST::checkComparistonAndOppForTypeErr(ASTNode * node)
@@ -332,7 +350,7 @@ void AST::checkComparistonAndOppForTypeErr(ASTNode * node)
         {
             stmtTypes.push_back(currType);
             if (stmtTypes.size() > 1 && stmtTypes[stmtTypes.size() - 1] != stmtTypes[stmtTypes.size() - 2])
-                cout << "types " << stmtTypes[stmtTypes.size() - 2] << " and " << stmtTypes[stmtTypes.size() - 1] << " cannot be compared and no operations between them can be made" << "on line " << node->value.line << "\n";
+                cout << "Error : types " << stmtTypes[stmtTypes.size() - 2] << " and " << stmtTypes[stmtTypes.size() - 1] << " cannot be compared and no operations between them can be made" << "on line " << node->value.line << "\n";
         }
     }
 }
@@ -343,7 +361,7 @@ void AST::checkMultipleDeclarations()
     for(auto it : rows)
     {
         if (find(identifiers.begin(), identifiers.end(), it->name) != identifiers.end())
-            cout << "Error : identifier " << it->name << " declared multiple times";
+            cout << "Error : identifier " << it->name << " declared multiple times\n";
         else
             identifiers.push_back(it->name);
     }

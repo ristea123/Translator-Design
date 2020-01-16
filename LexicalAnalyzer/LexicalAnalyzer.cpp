@@ -41,4 +41,6 @@ int main()
     }
     AST.parseTree();
     AST.checkMultipleDeclarations();
+    for (auto it : errors)
+        cout << it;
 }
