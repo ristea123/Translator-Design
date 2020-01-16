@@ -105,6 +105,16 @@ void buildDeclarationNode(vector<TokenClass>::iterator it, ASTNode *currNode)
 
 }
 
+void buildFunctionNode(vector<TokenClass>::iterator it, ASTNode *currNode)
+{
+    currNode->addChild(TokenClass("Statement", "function declaration"));
+    currNode = currNode->children[currNode->nrChildren - 1];
+    currNode->addChild(*it);
+    it++;
+    currNode->addChild(*it);
+    it++;
+}
+
 void AST::buildTree(vector<TokenClass> tokens)
 {
     for (auto it = tokens.begin(); it != tokens.end(); it++)
@@ -133,6 +143,10 @@ void AST::buildTree(vector<TokenClass> tokens)
         {
             buildDeclarationNode(it, currNode);
         }
+        if ((*it).tokenType == "type" && ((*(it + 2)).value == "("))
+        {
+            buildFunctionNode(it, currNode);
+        }
     }
 }
 
@@ -157,6 +171,46 @@ void AST::printTree()
                 TokenClass* a = new TokenClass(p->value.tokenType, "");
                 p->addChild(*a);
                 p->children[0]->isLeaf = true;
+            }
+            for (int i = 0; i < p->nrChildren; i++)
+                q.push(p->children[i]);
+            n--;
+        }
+        cout << endl;
+    }
+}
+
+
+void AST::buildSymbolTable()
+{
+    int nrAccolades = 0;
+    if (root == NULL)
+        return;
+    queue<ASTNode *> q;
+    q.push(root);
+    while (!q.empty())
+    {
+        int n = q.size();
+        while (n > 0)
+        {
+            string scope = "";
+            ASTNode * p = q.front();
+            q.pop();
+            if (p->value.value == "{")
+                nrAccolades++;
+            if (p->value.value == "}")
+                nrAccolades--;
+            if (p->value.tokenType == "declaration" || p->value.tokenType == "function declaration")
+            {
+                if (nrAccolades == 0)
+                    scope = "global";
+                else
+                    scope = "block local";
+                if(p->nrChildren >= 3 && (p->children[2]->value.value == ")" || p->children[2]->value.value == ","))
+                    scope = "function parameter";
+                rows.push_back(new symbolTableRow(p->children[1]->value.value, p->children[0]->value.value, scope));
+                if (p->value.tokenType == "function declaration")
+                    rows.back()->type += "-function";
             }
             for (int i = 0; i < p->nrChildren; i++)
                 q.push(p->children[i]);
@@ -197,11 +251,6 @@ void AST::parseTree()
 
 void AST::checkAssignmentTypeError(ASTNode * node)
 {
-    //if (node->children[1]->value.value != "=" && (node->children[2]->value.value != "=" && node->children[0]->value.tokenType != "type"))
-    //{
-    //    cout << "Error: cannot be more than 1 token before assignment operator\n";
-    //    return;
-    //}
     if (node->children[1]->value.value != "=" && (node->children[2]->value.value != "=" && node->children[0]->value.tokenType == "type"))
     {
         cout << "Error: cannot be more than 1 token before assignment operator on line" << node->children[1]->value.line << "\n";

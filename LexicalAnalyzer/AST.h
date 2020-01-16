@@ -16,6 +16,7 @@ public:
     void parseTree();
     void checkComparistonAndOppForTypeErr(ASTNode * node);
     void checkAssignmentTypeError(ASTNode * node);
+    void buildSymbolTable();
 };
 
 #endif // !__AST_H__
