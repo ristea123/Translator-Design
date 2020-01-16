@@ -93,6 +93,18 @@ void buildStatementNode(vector<TokenClass>::iterator it, ASTNode *currNode)
     }
 }
 
+void buildDeclarationNode(vector<TokenClass>::iterator it, ASTNode *currNode)
+{
+    currNode->addChild(TokenClass("statement", "declaration"));
+    currNode = currNode->children[currNode->nrChildren - 1];
+    while ((*it).value != ";" && (*it).value != "=")
+    {
+        currNode->addChild(*it);
+        it++;
+    }
+
+}
+
 void AST::buildTree(vector<TokenClass> tokens)
 {
     for (auto it = tokens.begin(); it != tokens.end(); it++)
@@ -116,6 +128,10 @@ void AST::buildTree(vector<TokenClass> tokens)
         if ((*it).value == "=")
         {
             buildStatementNode(it, currNode);
+        }
+        if ((*it).tokenType == "type" && ((*(it + 2)).value != "("))
+        {
+            buildDeclarationNode(it, currNode);
         }
     }
 }
@@ -181,14 +197,24 @@ void AST::parseTree()
 
 void AST::checkAssignmentTypeError(ASTNode * node)
 {
-    if (node->children[1]->value.value != "=")
-        cout << "Error: cannot be more than 1 token before assignment operator";
+    //if (node->children[1]->value.value != "=" && (node->children[2]->value.value != "=" && node->children[0]->value.tokenType != "type"))
+    //{
+    //    cout << "Error: cannot be more than 1 token before assignment operator\n";
+    //    return;
+    //}
+    if (node->children[1]->value.value != "=" && (node->children[2]->value.value != "=" && node->children[0]->value.tokenType == "type"))
+    {
+        cout << "Error: cannot be more than 1 token before assignment operator on line" << node->children[1]->value.line << "\n";
+        return;
+    }
     string identifierType;
     for (auto it : rows)
         if (node->children[0]->value.value == it->name)
             identifierType = it->type;
-
-    for (int i = 2; i < node->nrChildren; i++)
+    int i = 2;
+    if (node->children[0]->value.tokenType == "type")
+        i++;
+    for (i; i < node->nrChildren; i++)
     {
         string currType = "";
         if (node->children[i]->value.tokenType == "string literal")
@@ -204,7 +230,16 @@ void AST::checkAssignmentTypeError(ASTNode * node)
             }
         if (currType != identifierType && currType != "")
         {
-            cout << "Error Type : " << identifierType << node->children[0]->value.value << " identifier cannot be assigned " << currType << " type\n";
+            if (node->children[0]->value.tokenType != "type")
+            {
+                cout << "Error Type : " << identifierType << node->children[0]->value.value;
+                cout << " identifier cannot be assigned " << currType << " " << " type on line " << node->children[0]->value.line << "\n";
+            }
+            else
+            {
+                cout << "Error Type : " << identifierType << node->children[0]->value.value << " identifier cannot be initialized with " << currType;
+                cout << " type on line " << node->children[0]->value.line << "\n";
+            }
             break;
         }
 
@@ -233,7 +268,7 @@ void AST::checkComparistonAndOppForTypeErr(ASTNode * node)
         {
             stmtTypes.push_back(currType);
             if (stmtTypes.size() > 1 && stmtTypes[stmtTypes.size() - 1] != stmtTypes[stmtTypes.size() - 2])
-                cout << "types " << stmtTypes[stmtTypes.size() - 2] << " and " << stmtTypes[stmtTypes.size() - 1] << " cannot be compared and no operations between them can be made\n";
+                cout << "types " << stmtTypes[stmtTypes.size() - 2] << " and " << stmtTypes[stmtTypes.size() - 1] << " cannot be compared and no operations between them can be made" << "on line " << node->value.line << "\n";
         }
     }
 }

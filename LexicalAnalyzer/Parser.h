@@ -13,12 +13,13 @@ using namespace std;
 class Parser
 {
 public:
+    int nrLines = 1;
     std::vector<TokenClass> tokens;
     int nrTokens = 0;
     void printTokens()
     {
         for (auto it : tokens)
-            cout << it.value << " " << it.tokenType << " " << it.type << "\n";
+            cout << it.value << " " << it.tokenType << " " << it.type << " " << it.line << "\n";
     }
     void parse(string code)
     {
@@ -30,7 +31,10 @@ public:
             string value = code.substr(beg, pos - beg);
             string type = determineTokenType(value);
             TokenClass t(value, type);
+            t.line = nrLines;
             tokens.push_back(t);
+            if (pos < code.length() && (code[pos] == '\n' || code[pos + 1] == '\n'))
+                nrLines++;
             nrTokens++;
         }
     }
