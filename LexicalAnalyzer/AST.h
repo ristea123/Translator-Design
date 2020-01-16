@@ -17,6 +17,7 @@ public:
     void checkComparistonAndOppForTypeErr(ASTNode * node);
     void checkAssignmentTypeError(ASTNode * node);
     void buildSymbolTable();
+    void checkMultipleDeclarations();
 };
 
 #endif // !__AST_H__

@@ -7,11 +7,13 @@ int x ( int a , int b )
 {
     int y ;
     int z ;
+    int dfg ;
     CIN READ asd ;
     COUT WRITE "ABCD" ;
     IF ( asd + 2 EQEQ "abc" - 1 )
     {
         xyz = 123 ;
+        l = 3;
     }
     WHILE ( xyz EQEQ 123 )
     {

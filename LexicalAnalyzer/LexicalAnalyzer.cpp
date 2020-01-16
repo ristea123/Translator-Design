@@ -32,8 +32,6 @@ int main()
     AST.printTree();
 
     cout << "\n\n\n\n";
-
-    AST.parseTree();
     AST.buildSymbolTable();
 
     cout << "symbol name " << "Type " << "Scope" << "\n";
@@ -41,4 +39,6 @@ int main()
     {
         cout << it->name << " " << it->type << " " << it->scope << "\n";
     }
+    AST.parseTree();
+    AST.checkMultipleDeclarations();
 }
